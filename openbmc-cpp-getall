@@ -1,5 +1,20 @@
 syntax for getall properties method call
 
+
+The class template std::variant represents a type-safe union. An instance of std::variant at any given time either holds a value of one of its alternative types
+
+get_if(C++17)
+obtains a pointer to the value of a pointed-to variant given the index or the type (if unique), returns null on error
+
+holds_alternative will check for the variant datatype,we can also use this function to check whatever datatype particular variantype is holding.
+ if (std::holds_alternative<int>(property.second))
+        std::cout << "the variant holds an int!\n";
+    else if (std::holds_alternative<float>(property.second))
+        std::cout << "the variant holds a float\n";
+    else if (std::holds_alternative<std::string>(property.second))
+        std::cout << "the variant holds a string\n";  
+
+
 using VariantType = std::variant<bool, std::string, uint64_t, uint32_t>;
 using PropertiesType = boost::container::flat_map<std::string, VariantType>;
 
