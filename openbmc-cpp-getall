@@ -36,3 +36,7 @@ dbusConnection->async_method_call(
         dbusserviceName, dbusobjectpath, "org.freedesktop.DBus.Properties", "GetAll",
         inetrfacename);
 }
+
+
+
+org.freedesktop.DBus.Properties // standard interface used for inetrface properties Get , Set, GetAll methods 
