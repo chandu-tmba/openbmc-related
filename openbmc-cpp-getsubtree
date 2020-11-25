@@ -1,4 +1,5 @@
 GetSubTree - Find all object paths and services that implement a specific interface.
+Reference file : https://github.com/openbmc/docs/blob/master/architecture/object-mapper.md
 
 paramaters used for calling function will be same as GetSubTreePaths but o/p will be different in this case.
 
