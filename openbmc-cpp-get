@@ -1,5 +1,6 @@
    
-   
+   VariantType = std::variant<bool, std::string, uint64_t, uint32_t>;
+   variant type can be string,uint64_t,uint_32 etc, you have to use corresponding variant type in get_if<> based on the property datatype used while registering property in dbus insterface
    
    dbusConnection->async_method_call(
         [aResp](const boost::system::error_code ec,
