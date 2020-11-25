@@ -1,6 +1,9 @@
 syntax for getall properties method call
 
-    dbusConnection->async_method_call(
+
+using PropertiesType = boost::container::flat_map<std::string, VariantType>;
+
+dbusConnection->async_method_call(
         [aResp](const boost::system::error_code ec,PropertiesType &properties) {
               if (ec)
               {
