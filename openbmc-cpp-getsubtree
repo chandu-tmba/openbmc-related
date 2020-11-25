@@ -1,0 +1,65 @@
+GetSubTree - Find all object paths and services that implement a specific interface.
+
+paramaters used for calling function will be same as GetSubTreePaths but o/p will be different in this case.
+
+command line example 
+dbus-send --system --print-reply \
+--dest=xyz.openbmc_project.ObjectMapper \
+/xyz/openbmc_project/object_mapper \
+xyz.openbmc_project.ObjectMapper.GetSubTree \
+string:"/" int32:0 array:string:"xyz.openbmc_project.Sensor.Threshold.Warning"
+
+crow::connections::systemBus->async_method_call(
+            [asyncResp](
+                const boost::system::error_code ec,
+                const std::vector<std::pair<
+                    std::string, std::vector<std::pair<
+                                     std::string, std::vector<std::string>>>>>&
+                    subtree) {
+                if (ec)
+                {
+                    messages::internalError(asyncResp->res);
+                    return;
+                }
+
+
+                for (auto& obj : subtree)
+                {
+                    // if can't parse fw id then return
+                    std::size_t idPos;
+                    if ((idPos = obj.first.rfind("/")) == std::string::npos)
+                    {
+                        messages::internalError(asyncResp->res);
+                        BMCWEB_LOG_DEBUG << "Can't parse firmware ID!!";
+                        return;
+                    }
+                    std::string swId = obj.first.substr(idPos + 1);
+                    
+                                      nlohmann::json& members =
+                        asyncResp->res.jsonValue["Members"];
+                    members.push_back(
+                        {{"@odata.id", "/redfish/v1/UpdateService/"
+                                       "FirmwareInventory/" +
+                                           swId}});
+                    asyncResp->res.jsonValue["Members@odata.count"] =
+                        members.size();
+
+                    asyncResp->res.addHeader(boost::beast::http::field::allow,
+                                             redfish::Header::GetAllowHeaders("SoftwareInventoryCollection_v1.xml"));
+
+                }
+            },
+    
+            "xyz.openbmc_project.ObjectMapper",
+            "/xyz/openbmc_project/object_mapper",
+            "xyz.openbmc_project.ObjectMapper", "GetSubTree",
+            "/xyz/openbmc_project/software", static_cast<int32_t>(0),
+            std::array<const char*, 1>{"xyz.openbmc_project.Software.Version"});
+
+we can also use this datatype , both are same only
+const crow::openbmc_mapper::GetSubTreeType& subtree 
+
+        crow::connections::systemBus->async_method_call(
+            [self](const boost::system::error_code ec,
+                   const crow::openbmc_mapper::GetSubTreeType& subtree) {
+
