@@ -1,0 +1,30 @@
+   
+   
+   
+   dbusConnection->async_method_call(
+        [aResp](const boost::system::error_code ec,
+                                  const std::variant<std::string>& value) {
+            if (ec)
+            {
+                // do not add err msg in redfish response, because this is not
+                //     mandatory property
+                BMCWEB_LOG_ERROR << "DBUS response error " << ec << "\n";
+                return;
+            }
+
+            const std::string* status = std::get_if<std::string>(&value);
+
+            if (status == nullptr || *status == "unknown")
+            {
+                BMCWEB_LOG_ERROR << "intrusion status read error \n";
+                return;
+            }
+
+            aResp->res.jsonValue["PhysicalSecurity"] = {
+                {"IntrusionSensorNumber", 1}, {"IntrusionSensor", *status}};
+        },
+        dbusservice, objPath, "org.freedesktop.DBus.Properties", "Get",
+        dbusinetrfacename, propertyname);
+        
+        
+        
