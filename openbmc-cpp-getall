@@ -1,6 +1,6 @@
 syntax for getall properties method call
 
-
+using VariantType = std::variant<bool, std::string, uint64_t, uint32_t>;
 using PropertiesType = boost::container::flat_map<std::string, VariantType>;
 
 dbusConnection->async_method_call(
