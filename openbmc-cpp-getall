@@ -1,0 +1,35 @@
+syntax for getall properties method call
+
+    dbusConnection->async_method_call(
+        [aResp](const boost::system::error_code ec,PropertiesType &properties) {
+              if (ec)
+              {
+                std::cerr << "Error getting properties from " << path << "\n";
+                return;
+              }
+            
+              for ( const auto &property : properties)
+              {
+                                                        
+                                                        if (property.first == "Manufacturer")
+                                                        {
+                                                                const std::string *manufacturer = std::get_if<std::string>(&property.second);
+                                                                aResp->res.jsonValue["Manufacturer"] = *manufacturer;
+
+                                                        }
+
+                                                        else if (property.first == "TotalCores")
+                                                        {
+                                                                const uint64_t *cores = std::get_if<uint64_t>(&property.second);
+                                                                aResp->res.jsonValue["TotalCores"] = *cores;
+                                                        }
+                               
+
+             } // property loop end
+
+
+
+        },
+        dbusserviceName, dbusobjectpath, "org.freedesktop.DBus.Properties", "GetAll",
+        inetrfacename);
+}
