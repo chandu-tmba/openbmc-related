@@ -64,3 +64,27 @@ const crow::openbmc_mapper::GetSubTreeType& subtree
             [self](const boost::system::error_code ec,
                    const crow::openbmc_mapper::GetSubTreeType& subtree) {
 
+To get the  dbus object oath and service name , use following syntax
+this subtree method  will return complex dat structure which of type      const std::vector<std::pair< std::string, std::vector<std::pair<std::string, std::vector<std::string>>>>>
+We need to parse it accordingly to get all the dbus object paths and corresponding dbus service names
+
+        // at the same time get the selected profile
+        crow::connections::systemBus->async_method_call(
+            [self](const boost::system::error_code ec,
+                   const crow::openbmc_mapper::GetSubTreeType& subtree) {
+                if (ec || subtree.empty())
+                {
+                    return;
+                }
+                if (subtree[0].second.size() != 1)
+                {
+                    // invalid mapper response, should never happen
+                    BMCWEB_LOG_ERROR << "GetPIDValues: Mapper Error";
+                    messages::internalError(self->asyncResp->res);
+                    return;
+                }
+
+                const std::string& path = subtree[0].first; // dbus obj path
+                const std::string& owner = subtree[0].second[0].first; // dbus service path 
+
+
