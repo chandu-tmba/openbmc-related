@@ -1,0 +1,44 @@
+GetSubTreePaths -- find all object paths that implement a specific interface.
+In this example we are trying to find the dbus object paths which implemnts inetrface named "xyz.openbmc_project.Inventory.Item.Drive" , similarly we can use array of inetrfaces also
+Using "/" will search the whole tree, here we are using "/xyz/openbmc_project/inventory"
+int32_t(0) - depth(the maximum depth of the tree past the root to search. Use 0 to search all)
+
+
+
+       crow::connections::systemBus->async_method_call(
+            [asyncResp, health](const boost::system::error_code ec,
+                                const std::vector<std::string>& storageList) {
+        
+                if (ec)
+                {
+                    BMCWEB_LOG_ERROR << "Drive mapper call error";
+                    messages::internalError(asyncResp->res);
+                    return;
+                }
+
+
+                for (const std::string& objpath : storageList)
+                {
+                    std::size_t lastPos = objpath.rfind("/");
+                    if (lastPos == std::string::npos ||
+                        (objpath.size() <= lastPos + 1))
+                    {
+                        BMCWEB_LOG_ERROR << "Failed to find '/' in " << objpath;
+                        continue;
+                    }
+
+                    storageArray.push_back(
+                        {{"@odata.id",
+                          "/redfish/v1/Systems/system/Storage/1/Drives/" +
+                              objpath.substr(lastPos + 1)}});
+                }
+
+                count = storageArray.size();
+            },
+            "xyz.openbmc_project.ObjectMapper",
+            "/xyz/openbmc_project/object_mapper",
+            "xyz.openbmc_project.ObjectMapper", "GetSubTreePaths",
+            "/xyz/openbmc_project/inventory", int32_t(0),
+            std::array<const char*, 1>{"xyz.openbmc_project.Inventory.Item.Drive"});
+
+                                                        
