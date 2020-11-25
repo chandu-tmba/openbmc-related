@@ -3,6 +3,14 @@ In this example we are trying to find the dbus object paths which implemnts inet
 Using "/" will search the whole tree, here we are using "/xyz/openbmc_project/inventory"
 int32_t(0) - depth(the maximum depth of the tree past the root to search. Use 0 to search all)
 
+command line also we cna check this fucntion using this command
+
+dbus-send --system --print-reply \
+--dest=xyz.openbmc_project.ObjectMapper \
+/xyz/openbmc_project/object_mapper \
+xyz.openbmc_project.ObjectMapper.GetSubTreePaths \
+string:"/" int32:0 array:string:"xyz.openbmc_project.Sensor.Threshold.Warning"
+
 
 
        crow::connections::systemBus->async_method_call(
